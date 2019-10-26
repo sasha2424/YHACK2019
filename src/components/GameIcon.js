@@ -1,7 +1,11 @@
 import React from 'react';
 
 function GameIcon(props) {
-  return null;
+  return (
+  <div className="GameIcon">
+    {props.id}
+  </div>
+  );
 }
 
 export default GameIcon;
