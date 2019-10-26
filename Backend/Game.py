@@ -1,8 +1,8 @@
-import numpy
+
 
 class Game:
 
-    def __init__():
+    def __init__(self):
         pass
 
     def get_start_state(self):
@@ -17,17 +17,18 @@ class Game:
     def reward(self,s,a,s_):
         pass
 
+    def is_goal(self,s):
+        pass
+
     def show(selfaxis):
         pass
 
 
 class GridWorld(Game):
 
-    def __init__(row,col):
-        super().)__init__()
+    def __init__(self, row, col):
         self.rows = row
         self.cols = col
-        self.board = np.zeros((row,col))
 
     def get_start_state(self):
         return (0,0)
@@ -54,10 +55,15 @@ class GridWorld(Game):
         return s
 
     def reward(self,s,a):
+        if self.is_goal(s):
+            return 100
+        return -1
+
+    def is_goal(self,s):
         if s[0] == self.rows-1:
             if s[1] == self.cols-1:
-                return 10
-        return -1
+                return True
+        return False
 
     def show(self,axis):
         pass
