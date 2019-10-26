@@ -1,5 +1,10 @@
 import React from 'react';
 
 function QTable(props) {
-  return null;
+  return (
+    <div className="QTable">
+    </div>
+  );
 }
+
+export default QTable;

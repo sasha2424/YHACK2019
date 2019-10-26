@@ -1,5 +1,10 @@
 import React from 'react';
 
 function LearningRateGraph(props) {
-  return null;
+  return (
+    <div className="LearningRateGraph">
+    </div>
+  );
 }
+
+export default LearningRateGraph;

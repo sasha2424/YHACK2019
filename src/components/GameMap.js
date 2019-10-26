@@ -1,5 +1,10 @@
 import React from 'react';
 
 function GameMap(props) {
-  return null;
+  return (
+    <div className="GameMap">
+    </div>
+  );
 }
+
+export default GameMap;

@@ -1,5 +1,10 @@
 import React from 'react';
 
 function GameObjectSelector(props) {
-  return null;
+  return (
+    <div className="GameObjectSelector">
+    </div>
+  );
 }
+
+export default GameObjectSelector;
