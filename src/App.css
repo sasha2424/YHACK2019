@@ -1,0 +1,40 @@
+body {
+
+    background-color: lightblue;
+}
+
+.GameContainer {
+
+    width: 800px;
+    height: 600px;
+    border: 1px solid red;
+
+    margin: auto;
+
+    display: flex;
+
+}
+
+.GameObjectSelector {
+
+    border: 1px solid orange;
+    margin: 5px;
+    flex-grow: 1;
+
+}
+
+.GameMap {
+
+    border: 1px solid black;
+    margin: 5px;
+    flex-grow: 7;
+}
+
+.GameIcon {
+
+    width: 80px;
+    height: 80px;
+    border: 1px solid purple;
+    margin: 0;
+    
+}
