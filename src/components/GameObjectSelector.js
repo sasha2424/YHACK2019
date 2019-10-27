@@ -13,7 +13,6 @@ function GameObjectSelector(props) {
           isSelected={icon === props.selected}
           onClick={e => {
             props.setSelected(icon);
-            e.target.style.border = "1px solid green";
           }}
         />
       )}

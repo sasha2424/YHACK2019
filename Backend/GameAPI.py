@@ -1,8 +1,16 @@
+from flask import Flask, request, Response
 from Game import ToyWorld
 from QAgent import QAgentNumpy
+import json
 import numpy as np
 
 from threading import Thread
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+  return 'Server Works!'
 
 
 thread = None
@@ -17,11 +25,14 @@ fg_agent = QAgentNumpy(fg_game, (4,10,10), default = 0)
 fg_state = fg_game.get_start_state()
 
 
-def set_game_state(json):
+@app.route('/api/set-state', methods=['POST'])
+def set_game_state():
     global fg_state, fg_game, fg_agent, bg_state, bg_game, bg_agent
-    dict = eval(json.replace("null","None"))
-    board = dict['board']
-    agent = dict['agent']
+    data = request.get_json(force=True)
+    print(data)
+    # data = eval(json.replace("null","None"))
+    board = data['board']
+    agent = data['agent']
 
     fg_game = ToyWorld(*size)
     for i,elem in enumerate(board):
@@ -43,29 +54,35 @@ def set_game_state(json):
 
     bg_game.save_initial_state()
     fg_game.save_initial_state()
-    pass
+    return "success"
 
 
 def train_loop():
+    global bg_state, bg_agent, bg_game
     while(True):
         for step in range(1000):
+            # print(step)
             action = bg_agent.select_next_action(bg_state)
-            next_state = game.transition(bg_state,action)
-            reward = game.reward(bg_state,action)
+            bg_next_state = bg_game.transition(bg_state,action)
+            reward = bg_game.reward(bg_state,action)
             bg_agent.update(bg_state,action,reward,bg_next_state)
             bg_state = bg_next_state
 
             if bg_game.is_end(bg_state):
                 break
         bg_game.reset_to_initial()
-        bg_state = bg.get_start_state()
+        bg_state = bg_game.get_start_state()
 
+@app.route('/api/start', methods=['POST'])
 def start_training():
     thread = Thread(target = train_loop)
     thread.start()
+    return "success"
 
+@app.route('/api/end', methods=['POST'])
 def end_training():
     thread.join()
+    return "success"
 
 def reset_training():
     global bg_state, bg_game, bg_agent
@@ -75,14 +92,17 @@ def reset_training():
     pass
 
 
+@app.route('/api/reset-visual', methods=['POST'])
 def reset_visual():
     global fg_state, fg_game, fg_agent
     fg_game.reset_to_initial()
     fg_state = fg_game.get_start_state()
-    pass
+    return "success"
 
+@app.route('/api/step-visual', methods=['POST'])
 def step_visual():
     global fg_state, fg_game, fg_agent
+    update_Q()
     action = fg_agent.select_next_action(fg_state)
     fg_state = fg_game.transition(fg_state,action)
 
@@ -98,13 +118,19 @@ def step_visual():
         i = bomb[0] * size[1] + bomb[1]
         board[i] = 'bomb'
 
-    json = str({'board':board,'agent':list(fg_state)})
-    return json
+    data = json.dumps({'board':board,'agent':list(fg_state)})
+    print(data)
+    resp = Response(data, status=200, mimetype='application/json')
+    # print(resp)
+    return resp
+    # json = str({'board':board,'agent':list(fg_state)})
+    # # print(json)
+    # return json
 
 def update_Q():
     fg_agent.Q = bg_agent.Q.copy()
 
 
-json = "{'board':[null,'block','bomb'],'agent':[0,0]}"
-set_game_state(json)
-print(step_visual())
+# json = "{'board':[null,'block','bomb'],'agent':[0,0]}"
+# set_game_state(json)
+# print(step_visual())
