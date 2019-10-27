@@ -96,6 +96,10 @@ class ToyWorld(Game):
             self.initial_blocks = []
             self.initial_bombs = []
 
+        def copy_state(self,game):
+            self.blocks = game.blocks[:]
+            self
+
         def save_initial_state(self):
             self.initial_blocks = self.blocks[:]
             self.initial_bombs = self.bombs[:]

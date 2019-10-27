@@ -10,32 +10,10 @@ import numpy as np
 
 
 
-size = (20,20)
+size = (10,10)
 game = ToyWorld(*size)
-agent = QAgentNumpy(game, (4,20,20), default = 0, epsilon = 0, alpha = .5, gamma = .99)
+agent = QAgentNumpy(game, (4,10,10), default = 0, epsilon = .1, alpha = .5, gamma = .99)
 #agent = QAgent(game, default = -1, epsilon = .01, alpha = .1, gamma = .99)
-
-"""
-game.add_wall((2,8))
-game.add_wall((2,7))
-game.add_wall((2,6))
-game.add_wall((2,5))
-game.add_wall((2,4))
-game.add_wall((2,3))
-game.add_wall((2,2))
-game.add_wall((2,1))
-game.add_wall((2,0))
-
-game.add_wall((5,9))
-game.add_wall((5,8))
-game.add_wall((5,7))
-game.add_wall((5,6))
-game.add_wall((5,5))
-game.add_wall((5,4))
-game.add_wall((5,3))
-game.add_wall((5,2))
-game.add_wall((5,1))
-"""
 
 
 game.add_block((5,5))
