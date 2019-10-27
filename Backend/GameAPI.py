@@ -35,6 +35,7 @@ def set_game_state():
     agent = data['agent']
 
     fg_game = ToyWorld(*size)
+    bg_game = ToyWorld(*size)
     for i,elem in enumerate(board):
         loc = (i // size[0],i % size[1])
         if elem == None:
@@ -64,7 +65,8 @@ def train_loop():
             # print(step)
             action = bg_agent.select_next_action(bg_state)
             bg_next_state = bg_game.transition(bg_state,action)
-            reward = bg_game.reward(bg_state,action)
+            reward = bg_game.reward(bg_next_state,action)
+            print(reward)
             bg_agent.update(bg_state,action,reward,bg_next_state)
             bg_state = bg_next_state
 
@@ -101,10 +103,13 @@ def reset_visual():
 
 @app.route('/api/step-visual', methods=['POST'])
 def step_visual():
-    global fg_state, fg_game, fg_agent
     update_Q()
+    global fg_state, fg_game, fg_agent
     action = fg_agent.select_next_action(fg_state)
     fg_state = fg_game.transition(fg_state,action)
+    if fg_game.is_end(fg_state):
+        fg_game.reset_to_initial()
+        
 
     #construct return string
     board = [None for i in range(size[0] * size[1])]
@@ -117,15 +122,14 @@ def step_visual():
     for bomb in fg_game.bombs:
         i = bomb[0] * size[1] + bomb[1]
         board[i] = 'bomb'
-
-    data = json.dumps({'board':board,'agent':list(fg_state)})
-    print(data)
+    q_table = np.max(bg_agent.Q,axis=0)
+    q_table -= np.min(q_table)
+    q_table = q_table / (np.max(q_table) + .001)
+    q_table = q_table.flatten().tolist()
+    data = json.dumps({'board':board,'agent':list(fg_state),'qtable':q_table})
+    # print(data)
     resp = Response(data, status=200, mimetype='application/json')
-    # print(resp)
     return resp
-    # json = str({'board':board,'agent':list(fg_state)})
-    # # print(json)
-    # return json
 
 def update_Q():
     fg_agent.Q = bg_agent.Q.copy()

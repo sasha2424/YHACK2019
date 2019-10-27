@@ -4,26 +4,24 @@ import GameTile from './GameTile';
 function GameMap(props) {
   const [hovering, setHovering] = useState(null);
   const [position, setPosition] = useState([5, 0]);
+  const [gradient, setGradient] = useState([...Array(100)].fill(0));
   const [state, setState] = useState([...Array(100)]);
 
   useEffect(() => {
     let interval = null;
     const setup = async () => {
       await fetch('http://localhost:5000/api/start', { method: 'POST', mode: 'no-cors' });
-      //fetch('http://localhost:5000/api/reset-visual', { method: 'POST', mode: 'no-cors' });
 
-      interval = setInterval(async () => {
-        const response = await fetch('http://localhost:5000/api/step-visual', {
+      interval = setInterval(() => {
+        fetch('http://localhost:5000/api/step-visual', {
           method: 'POST',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Credentials': true,
           'Access-Control-Allow-Methods': 'POST',
           'Access-Control-Allow-Headers': 'Content-Type',
-        });
-        console.log(response);
-        const { board, agent } = await response.json();
-        setState(board);
-        setPosition(agent);
+        }).then(response => response.json())
+          .then(({ board, agent, qtable }) => { setState(board); setPosition(agent); setGradient(qtable); })
+          .catch(() => clearInterval(interval));
       }, 200);
     };
 
@@ -50,6 +48,7 @@ function GameMap(props) {
         <GameTile
           key={i}
           icon={icon}
+          color={gradient[i]}
           isPlayer={i === 10 * position[0] + position[1]}
           isHovering={hovering === i}
           onMouseOver={() => setHovering(i)}

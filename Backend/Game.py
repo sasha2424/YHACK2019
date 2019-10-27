@@ -183,7 +183,7 @@ class ToyWorld(Game):
 
         def reward(self,s,a):
             if self.is_goal(s):
-                return 100
+                return 1000
             for bomb in self.bombs:
                 if s[0] == bomb[0] and s[1] == bomb[1]:
                     return -10
