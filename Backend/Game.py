@@ -87,7 +87,8 @@ class ToyWorld(Game):
         def __init__(self, row, col):
             self.rows = row
             self.cols = col
-            #self.blocks = []
+
+            self.blocks = []
             self.bombs = []
             self.teleports = []
             self.walls = []
@@ -106,22 +107,34 @@ class ToyWorld(Game):
                 if s[0] == teleport[0] and s[1] == teleport[1]:
                     s = (teleport[2],teleport[3])
 
+            s_prev = s
             if(a == 0): #DOWN
                 if not s[0] == self.rows-1:
                     if not self.is_wall((s[0] + 1, s[1])):
                         s = (s[0] + 1, s[1])
+                        s_ = (s[0] + 1, s[1])
             if(a == 1): #RIGHT
                 if not s[1] == self.cols-1:
                     if not self.is_wall((s[0], s[1] + 1)):
                         s = (s[0], s[1] + 1)
+                        s_ = (s[0], s[1] + 1)
             if(a == 2): #UP
                 if not s[0] == 0:
                     if not self.is_wall((s[0] - 1, s[1])):
                         s =  (s[0] - 1, s[1])
+                        s_ = (s[0] - 1, s[1])
             if(a == 3):
                 if not s[1] == 0:
                     if not self.is_wall((s[0], s[1] - 1)):
                         s =  (s[0], s[1] - 1)
+                        s_ = (s[0], s[1] - 1)
+
+            for i,block in enumerate(self.blocks):
+                if block == s:
+                    if self.is_empty(s_):
+                        self.blocks[i] = s_
+                        return s
+                    return s_prev
 
             return s
 
@@ -131,9 +144,29 @@ class ToyWorld(Game):
                     return True
             return False
 
+        def is_empty(self,s):
+            if s[0] < 0 or s[0] > self.rows-1:
+                return False
+            if s[1] < 0 or s[1] > self.cols-1:
+                return False
+            for wall in self.walls:
+                if wall == s:
+                    return False
+            for teleport in self.teleports:
+                if s[0] == teleport[0] and s[1] == teleport[1]:
+                    return False
+            for block in self.blocks:
+                if block == s:
+                    return False
+            for bomb in self.bombs:
+                if bomb == s:
+                    return False
+            return True
+
+
         def reward(self,s,a):
             if self.is_goal(s):
-                return 1000
+                return 100
             for bomb in self.bombs:
                 if s[0] == bomb[0] and s[1] == bomb[1]:
                     return -10
@@ -155,6 +188,18 @@ class ToyWorld(Game):
                     return True
             return False
 
+        def add_block(self,s):
+            self.blocks.append(s)
+
+        def remove_block(self,s):
+            try:
+                self.blocks.remove(s)
+            except:
+                pass
+
+        def reset_block(self,i,s):
+            self.blocks[i] = s
+
         def add_wall(self,s):
             self.walls.append(s)
 
@@ -167,7 +212,7 @@ class ToyWorld(Game):
         def add_bomb(self,s):
             self.bombs.append(s)
 
-        def remove_wall(self,s):
+        def remove_bomb(self,s):
             try:
                 self.bombs.remove(s)
             except:

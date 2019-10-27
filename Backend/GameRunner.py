@@ -10,12 +10,12 @@ import numpy as np
 
 
 
-size = (10,10)
+size = (20,20)
 game = ToyWorld(*size)
-agent = QAgentNumpy(game, (4,10,10), default = 0, epsilon = 0, alpha = .5, gamma = .99)
+agent = QAgentNumpy(game, (4,20,20), default = 0, epsilon = 0, alpha = .5, gamma = .99)
 #agent = QAgent(game, default = -1, epsilon = .01, alpha = .1, gamma = .99)
 
-
+"""
 game.add_wall((2,8))
 game.add_wall((2,7))
 game.add_wall((2,6))
@@ -35,6 +35,28 @@ game.add_wall((5,4))
 game.add_wall((5,3))
 game.add_wall((5,2))
 game.add_wall((5,1))
+"""
+
+
+game.add_block((5,5))
+game.add_block((4,6))
+game.add_block((6,4))
+game.add_block((3,7))
+game.add_block((7,3))
+game.add_block((8,2))
+game.add_block((2,8))
+
+
+game.add_wall((6,8))
+game.add_wall((8,6))
+game.add_wall((4,8))
+game.add_wall((8,4))
+game.add_wall((4,4))
+
+game.add_teleport((9,0),(8,8))
+game.add_block((8,0))
+game.add_block((6,1))
+
 
 
 state = game.get_start_state()
@@ -49,7 +71,7 @@ for episode in range(10000):
         state = next_state
 
 
-        if game.is_end(state) or episode > 100 and episode % 10 == 0:
+        if game.is_end(state) or episode > 200 and episode % 10 == 0:
             #board = np.zeros((10,10))
             #for row in range(10):
             #    for col in range(10):
@@ -63,14 +85,26 @@ for episode in range(10000):
             for bomb in game.bombs:
                 plt.scatter(bomb[1],bomb[0],s=60,c='r',marker="v")
 
+            for block in game.blocks:
+                plt.scatter(block[1],block[0],s=60,c='r',marker="X")
+
             for i,teleport in enumerate(game.teleports):
                 plt.scatter(teleport[1],teleport[0],s=60,c='r',marker="1")
                 plt.scatter(teleport[3],teleport[2],s=60,c='r',marker="2")
 
             plt.title("Episode " + str(episode))
             plt.draw()
-            plt.pause(.1)
+            plt.pause(.01)
             plt.cla()
 
         if game.is_end(state):
             break
+    game.reset_block(0,(5,5))
+    game.reset_block(1,(4,6))
+    game.reset_block(2,(6,4))
+    game.reset_block(3,(3,7))
+    game.reset_block(4,(7,3))
+    game.reset_block(5,(8,2))
+    game.reset_block(6,(2,8))
+    game.reset_block(7,(8,0))
+    game.reset_block(8,(6,1))
