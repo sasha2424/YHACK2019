@@ -124,6 +124,7 @@ class ToyWorld(Game):
                 if s[0] == teleport[0] and s[1] == teleport[1]:
                     s = (teleport[2],teleport[3])
 
+            s_ = None
             s_prev = s
             if(a == 0): #DOWN
                 if not s[0] == self.rows-1:
@@ -147,6 +148,8 @@ class ToyWorld(Game):
                         s_ = (s[0], s[1] - 1)
 
             for i,block in enumerate(self.blocks):
+                if s_ == None:
+                    break
                 if block == s:
                     if self.is_empty(s_):
                         self.blocks[i] = s_
@@ -180,10 +183,9 @@ class ToyWorld(Game):
                     return False
             return True
 
-
         def reward(self,s,a):
             if self.is_goal(s):
-                return 100
+                return 1000
             for bomb in self.bombs:
                 if s[0] == bomb[0] and s[1] == bomb[1]:
                     return -10

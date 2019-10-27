@@ -10,31 +10,31 @@ import numpy as np
 
 
 
-size = (10,10)
+size = (20,20)
 game = ToyWorld(*size)
-agent = QAgentNumpy(game, (4,10,10), default = 0, epsilon = .1, alpha = .5, gamma = .99)
+agent = QAgentNumpy(game, (4,20,20), default = 0, epsilon = .1, alpha = .5, gamma = .99)
 #agent = QAgent(game, default = -1, epsilon = .01, alpha = .1, gamma = .99)
 
 
-game.add_block((5,5))
-game.add_block((4,6))
-game.add_block((6,4))
-game.add_block((3,7))
-game.add_block((7,3))
-game.add_block((8,2))
-game.add_block((2,8))
 
+for i in range(20):
+    i = np.random.randint(size[1]*size[0])
+    loc = (i // size[1], i % size[0])
+    if(game.is_empty(loc)):
+        game.add_block(loc)
 
-game.add_wall((6,8))
-game.add_wall((8,6))
-game.add_wall((4,8))
-game.add_wall((8,4))
-game.add_wall((4,4))
+for i in range(15):
+    i = np.random.randint(size[1]*size[0])
+    loc = (i // size[1], i % size[0])
+    if(game.is_empty(loc)):
+        game.add_wall(loc)
 
-game.add_teleport((9,0),(8,8))
-game.add_block((8,0))
-game.add_block((6,1))
-game.add_block((7,1))
+for i in range(15):
+    i = np.random.randint(size[1]*size[0])
+    loc = (i // size[1], i % size[0])
+    if(game.is_empty(loc)):
+        game.add_bomb(loc)
+
 
 game.save_initial_state()
 
@@ -42,7 +42,7 @@ state = game.get_start_state()
 plt.show()
 
 for episode in range(10000):
-    for step in range(1000):
+    for step in range(100):
         action = agent.select_next_action(state)
         next_state = game.transition(state,action)
         reward = game.reward(state,action)
@@ -50,7 +50,7 @@ for episode in range(10000):
         state = next_state
 
 
-        if game.is_end(state) or episode > 200 and episode % 10 == 0:
+        if game.is_end(state) or episode > 500 and episode % 50 == 0:
             #board = np.zeros((10,10))
             #for row in range(10):
             #    for col in range(10):
