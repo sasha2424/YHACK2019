@@ -56,8 +56,9 @@ game.add_wall((4,4))
 game.add_teleport((9,0),(8,8))
 game.add_block((8,0))
 game.add_block((6,1))
+game.add_block((7,1))
 
-
+game.save_initial_state()
 
 state = game.get_start_state()
 plt.show()
@@ -99,12 +100,4 @@ for episode in range(10000):
 
         if game.is_end(state):
             break
-    game.reset_block(0,(5,5))
-    game.reset_block(1,(4,6))
-    game.reset_block(2,(6,4))
-    game.reset_block(3,(3,7))
-    game.reset_block(4,(7,3))
-    game.reset_block(5,(8,2))
-    game.reset_block(6,(2,8))
-    game.reset_block(7,(8,0))
-    game.reset_block(8,(6,1))
+    game.reset_to_initial()

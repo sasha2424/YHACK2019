@@ -93,6 +93,17 @@ class ToyWorld(Game):
             self.teleports = []
             self.walls = []
 
+            self.initial_blocks = []
+            self.initial_bombs = []
+
+        def save_initial_state(self):
+            self.initial_blocks = self.blocks[:]
+            self.initial_bombs = self.bombs[:]
+
+        def reset_to_initial(self):
+            self.blocks[:] = self.initial_blocks[:]
+            self.bombs[:] = self.initial_bombs[:]
+
         def get_start_state(self):
             return (0,0)
 
