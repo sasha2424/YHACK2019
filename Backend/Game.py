@@ -163,7 +163,7 @@ class ToyWorld(Game):
                 if s[0] == wall[0] and s[1] == wall[1]:
                     return True
             return False
-
+            
         def is_empty(self,s):
             if s[0] < 0 or s[0] > self.rows-1:
                 return False

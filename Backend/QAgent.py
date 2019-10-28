@@ -171,17 +171,24 @@ class QAgentLambda():
 
 
 class QAgentNumpy():
-    def __init__(self, game, shape, default, alpha=0.5, epsilon=0.1, gamma=0.99):
+    def __init__(self, game, shape, default, alpha=0.5, epsilon=0.1, gamma=0.5, lam = 0.5):
         self.game = game
 
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
+        self.lam = lam
         self.shape = shape
 
         self.default = default
         self.Q = np.zeros(self.shape)
         self.Q.fill(default)
+
+        self.E = np.zeros(self.shape)
+        self.E.fill(0)
+
+    def reset_E(self):
+        self.E = np.zeros(self.shape)
 
 
     def Q_val(self,s,a):
@@ -236,4 +243,8 @@ class QAgentNumpy():
     def update(self, s, a, r, s_):
         Q_ = self.argmax_q(s_)
         I = (a,) + tuple(s)
-        self.Q[I] = self.Q[I] + self.alpha * (r + self.gamma * Q_ - self.Q[I])
+
+        self.E[I] = 1
+        delta =  -self.Q_val(s,a) + r + self.gamma * Q_
+        self.Q = self.Q + self.alpha * delta * self.E
+        self.E = self.E * self.lam * self.gamma

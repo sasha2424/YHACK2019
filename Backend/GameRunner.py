@@ -12,29 +12,22 @@ import numpy as np
 
 size = (20,20)
 game = ToyWorld(*size)
-agent = QAgentNumpy(game, (4,20,20), default = 0, epsilon = .1, alpha = .5, gamma = .99)
+agent = QAgentNumpy(game, (4,20,20), default = 0, epsilon = .1, alpha = .99, gamma = .99, lam = .5)
 #agent = QAgent(game, default = -1, epsilon = .01, alpha = .1, gamma = .99)
 
+num = (size[0] * size[1])
+for i in range(num // 5):
+    i = np.random.randint(1,num-1)
+    loc = (i // size[0], i % size[1])
+    game.add_wall(loc)
+
+for i in range(num // 5):
+    i = np.random.randint(1,num-1)
+    loc = (i // size[0], i % size[1])
+    game.add_block(loc)
 
 
-for i in range(20):
-    i = np.random.randint(size[1]*size[0])
-    loc = (i // size[1], i % size[0])
-    if(game.is_empty(loc)):
-        game.add_block(loc)
-
-for i in range(15):
-    i = np.random.randint(size[1]*size[0])
-    loc = (i // size[1], i % size[0])
-    if(game.is_empty(loc)):
-        game.add_wall(loc)
-
-for i in range(15):
-    i = np.random.randint(size[1]*size[0])
-    loc = (i // size[1], i % size[0])
-    if(game.is_empty(loc)):
-        game.add_bomb(loc)
-
+game.add_block((1,2))
 
 game.save_initial_state()
 
@@ -42,7 +35,7 @@ state = game.get_start_state()
 plt.show()
 
 for episode in range(10000):
-    for step in range(100):
+    for step in range(400):
         action = agent.select_next_action(state)
         next_state = game.transition(state,action)
         reward = game.reward(state,action)
@@ -50,7 +43,7 @@ for episode in range(10000):
         state = next_state
 
 
-        if game.is_end(state) or episode > 500 and episode % 50 == 0:
+        if game.is_end(state) or episode > 100 and episode % 20 == 0:
             #board = np.zeros((10,10))
             #for row in range(10):
             #    for col in range(10):
@@ -60,16 +53,16 @@ for episode in range(10000):
                board[wall[0],wall[1]] = None
 
             plt.imshow(board,origin='lower')
-            plt.scatter(state[1],state[0],s=30,c='r',marker="o")
+            plt.scatter(state[1],state[0],s=80,c='r',marker="o")
             for bomb in game.bombs:
-                plt.scatter(bomb[1],bomb[0],s=60,c='r',marker="v")
+                plt.scatter(bomb[1],bomb[0],s=80,c='r',marker="v")
 
             for block in game.blocks:
-                plt.scatter(block[1],block[0],s=60,c='r',marker="X")
+                plt.scatter(block[1],block[0],s=80,c='r',marker="X")
 
             for i,teleport in enumerate(game.teleports):
-                plt.scatter(teleport[1],teleport[0],s=60,c='r',marker="1")
-                plt.scatter(teleport[3],teleport[2],s=60,c='r',marker="2")
+                plt.scatter(teleport[1],teleport[0],s=80,c='r',marker="1")
+                plt.scatter(teleport[3],teleport[2],s=80,c='r',marker="2")
 
             plt.title("Episode " + str(episode))
             plt.draw()
@@ -78,4 +71,6 @@ for episode in range(10000):
 
         if game.is_end(state):
             break
+    state = game.get_start_state()
     game.reset_to_initial()
+    agent.reset_E()

@@ -1,24 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Sprite from './Sprite';
 
 function GameTile(props) {
-    const [placed, setPlaced] = useState(null);
   return (
     <div
-        className="GameTile"
-        onMouseOver={props.onMouseOver}
-        style={{ backgroundColor: props.isHovering?'green':'' }}
-        onClick={() => {
-            if(props.isHovering){
-                setPlaced(props.toPlace);
-                let newState = props.state;
-                newState[props.index] = props.toPlace;
-                props.updateState(newState)}}}
+      className="GameTile"
+      onMouseOver={props.onMouseOver}
+      style={{ backgroundColor: props.isHovering ? 'green' : '' }}
+      onClick={props.updateState}
     >
-        {placed && <Sprite icon={placed} />}
-        {props.isPlayer && <Sprite icon="player" />}
+      {props.icon && <Sprite icon={props.icon} />}
+      {props.isPlayer && <Sprite icon="player" />}
     </div>
-  )
+  );
 }
 
 export default GameTile;
